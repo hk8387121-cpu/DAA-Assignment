@@ -1,62 +1,41 @@
-const edges=[['C1','C2'],['C1','C3'],['C2','C3'],['C2','C4'],['C3','C4'],['C4','C5'],['C5','C6'],['C1','C6']];
 const nodes=['C1','C2','C3','C4','C5','C6'];
-let k=3,strategy='plain';
+const edges=[['C1','C2'],['C1','C3'],['C2','C3'],['C2','C4'],['C3','C4'],['C4','C5'],['C5','C6'],['C1','C6']];
+const pos={C1:[18,24],C2:[54,16],C3:[16,62],C4:[55,59],C5:[81,34],C6:[84,82]};
+const palette={1:'#78f0c8',2:'#8e9cff',3:'#ffca7a',4:'#ff7fa8'};
+let k=3,strategy='plain',running=false;
 const graph=document.getElementById('solverGraph');
 const statusEl=document.getElementById('status'),assignEl=document.getElementById('assignments'),backEl=document.getElementById('backtracks'),slotEl=document.getElementById('slots'),bar=document.getElementById('progressBar');
-const pos={C1:[18,18],C2:[54,10],C3:[14,55],C4:[55,52],C5:[79,27],C6:[82,75]};
-const nodeSize=52;
 function makeGraph(){
   graph.innerHTML='';
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-  svg.classList.add('sg-edges');
-  svg.setAttribute('viewBox','0 0 100 100');
-  svg.setAttribute('preserveAspectRatio','none');
-  edges.forEach(([a,b])=>{
-    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1',pos[a][0]); line.setAttribute('y1',pos[a][1]);
-    line.setAttribute('x2',pos[b][0]); line.setAttribute('y2',pos[b][1]);
-    svg.appendChild(line);
-  });
-  graph.appendChild(svg);
-  for(const n of nodes){
-    const d=document.createElement('div');
-    d.className='sg-node'; d.id='sg-'+n; d.textContent=n;
-    d.style.left=`calc(${pos[n][0]}% + ${nodeSize/2}px)`;
-    d.style.top=`calc(${pos[n][1]}% + ${nodeSize/2}px)`;
-    graph.appendChild(d);
-  }
+  svg.setAttribute('viewBox','0 0 100 100'); svg.setAttribute('preserveAspectRatio','none'); svg.classList.add('sg-svg');
+  const edgeLayer=document.createElementNS('http://www.w3.org/2000/svg','g'); edgeLayer.classList.add('sg-edge-layer');
+  edges.forEach(([a,b])=>{const line=document.createElementNS('http://www.w3.org/2000/svg','line');line.classList.add('sg-edge');line.setAttribute('x1',pos[a][0]);line.setAttribute('y1',pos[a][1]);line.setAttribute('x2',pos[b][0]);line.setAttribute('y2',pos[b][1]);edgeLayer.appendChild(line)});
+  svg.appendChild(edgeLayer);
+  const nodeLayer=document.createElementNS('http://www.w3.org/2000/svg','g');
+  nodes.forEach(n=>{const g=document.createElementNS('http://www.w3.org/2000/svg','g');g.classList.add('sg-node');g.dataset.node=n;const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');circle.classList.add('sg-node-circle');circle.setAttribute('cx',pos[n][0]);circle.setAttribute('cy',pos[n][1]);circle.setAttribute('r','4.6');const text=document.createElementNS('http://www.w3.org/2000/svg','text');text.classList.add('sg-node-label');text.setAttribute('x',pos[n][0]);text.setAttribute('y',pos[n][1]+1.25);text.textContent=n;g.append(circle,text);nodeLayer.appendChild(g)});
+  svg.appendChild(nodeLayer);graph.appendChild(svg);
 }
-function conflict(v,c,assignment){return edges.some(([a,b])=>(a===v&&assignment[b]===c)||(b===v&&assignment[a]===c))}
-function solve(){
-  const assignment={};
-  const order=strategy==='plain'?[...nodes]:[...nodes].sort((a,b)=>edges.filter(e=>e.includes(b)).length-edges.filter(e=>e.includes(a)).length);
-  let assignments=0,backs=0;
-  function bt(i){
-    if(i===order.length)return true;
-    const v=order[i];
-    const colors=[1,2,3,4].slice(0,k).filter(c=>!conflict(v,c,assignment));
-    for(const c of colors){
-      assignments++; assignment[v]=c;
-      const node=document.getElementById('sg-'+v);
-      node.classList.add('assigned');
-      node.style.boxShadow='0 0 25px rgba(120,240,200,.16)';
-      update(assignments,backs,i+1);
-      if(bt(i+1))return true;
-      delete assignment[v]; backs++;
-      node.classList.remove('assigned'); node.style.boxShadow='';
-      update(assignments,backs,i);
-    }
+function adjacent(v){return edges.filter(([a,b])=>a===v||b===v).map(([a,b])=>a===v?b:a)}
+function conflict(v,c,a){return adjacent(v).some(n=>a[n]===c)}
+function available(v,a){const used=new Set(adjacent(v).map(n=>a[n]).filter(Boolean));return [1,2,3,4].slice(0,k).filter(c=>!used.has(c))}
+function degree(v){return adjacent(v).length}
+function chooseVertex(a,order){if(strategy==='plain')return order.find(v=>a[v]===undefined);return order.filter(v=>a[v]===undefined).sort((x,y)=>{const ax=available(x,a).length,ay=available(y,a).length;return ax-ay||degree(y)-degree(x)})[0]}
+function paint(v,c){const g=graph.querySelector(`[data-node="${v}"]`),circle=g?.querySelector('circle');if(!circle)return;if(c){circle.style.fill=palette[c];circle.style.stroke=palette[c];circle.style.filter=`drop-shadow(0 0 8px ${palette[c]}55)`;g.classList.add('assigned')}else{circle.style.fill='#121822';circle.style.stroke='rgba(120,240,200,.65)';circle.style.filter='none';g.classList.remove('assigned')}}
+function update(a,b,step){assignEl.textContent=a;backEl.textContent=b;bar.style.width=Math.min(100,step/nodes.length*100)+'%'}
+function delay(ms){return new Promise(r=>setTimeout(r,ms))}
+async function solve(){
+  const assignment={},order=[...nodes];let attempts=0,backs=0,conflicts=0;const started=performance.now();
+  async function bt(depth){
+    if(depth===nodes.length)return true;
+    const v=chooseVertex(assignment,order),colors=available(v,assignment);
+    if(!colors.length){backs++;update(attempts,backs,depth);await delay(70);return false}
+    for(const c of colors){attempts++;if(conflict(v,c,assignment)){conflicts++;continue}assignment[v]=c;paint(v,c);update(attempts,backs,depth+1);await delay(110);if(await bt(depth+1))return true;delete assignment[v];backs++;paint(v);update(attempts,backs,depth);await delay(90)}
     return false;
   }
-  const ok=bt(0);
-  return {ok,assignment,assignments,backs,used:new Set(Object.values(assignment)).size};
+  const ok=await bt(0),time=(performance.now()-started).toFixed(2),used=ok?new Set(Object.values(assignment)).size:0;return {ok,assignment,attempts,backs,conflicts,time,used}
 }
-function update(a,b,step){assignEl.textContent=a;backEl.textContent=b;bar.style.width=Math.min(100,step/nodes.length*100)+'%'}
-function run(){
-  makeGraph(); statusEl.textContent='Solving…'; assignEl.textContent='0'; backEl.textContent='0'; slotEl.textContent='—'; bar.style.width='0%';
-  setTimeout(()=>{const r=solve();statusEl.textContent=r.ok?'Valid colouring':'No solution';slotEl.textContent=r.ok?r.used:'—';},120);
-}
-document.querySelectorAll('#colorButtons button').forEach(b=>b.onclick=()=>{k=+b.dataset.k;document.querySelectorAll('#colorButtons button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('spaceValue').textContent=`${k}ⁿ`});
-document.querySelectorAll('#strategyButtons button').forEach(b=>b.onclick=()=>{strategy=b.dataset.strategy;document.querySelectorAll('#strategyButtons button').forEach(x=>x.classList.remove('active'));b.classList.add('active')});
-document.getElementById('runBtn').onclick=run;
-makeGraph();
+async function run(){if(running)return;running=true;makeGraph();statusEl.textContent='Solving…';assignEl.textContent='0';backEl.textContent='0';slotEl.textContent='—';bar.style.width='0%';const r=await solve();statusEl.textContent=r.ok?'Valid colouring':'No solution';slotEl.textContent=r.ok?r.used:'—';bar.style.width=r.ok?'100%':'0%';if(r.ok)nodes.forEach(n=>paint(n,r.assignment[n]));running=false}
+document.querySelectorAll('#colorButtons button').forEach(b=>b.onclick=()=>{if(running)return;k=+b.dataset.k;document.querySelectorAll('#colorButtons button').forEach(x=>x.classList.remove('active'));b.classList.add('active');const sv=document.getElementById('spaceValue');if(sv)sv.textContent=`${k}ⁿ`;makeGraph();statusEl.textContent='Ready';assignEl.textContent='0';backEl.textContent='0';slotEl.textContent='—';bar.style.width='0%'});
+document.querySelectorAll('#strategyButtons button').forEach(b=>b.onclick=()=>{if(running)return;strategy=b.dataset.strategy;document.querySelectorAll('#strategyButtons button').forEach(x=>x.classList.remove('active'));b.classList.add('active');makeGraph();statusEl.textContent='Ready';assignEl.textContent='0';backEl.textContent='0';slotEl.textContent='—';bar.style.width='0%'});
+document.getElementById('runBtn').onclick=run;makeGraph();

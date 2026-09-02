@@ -1,145 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Conflict-Free Exam Timetable Scheduling using Graph Colouring and Backtracking — CSA0614">
-  <title>ExamSlot AI | DAA Backtracking</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="bg-grid"></div>
-  <header class="topbar">
-    <a class="brand" href="#home"><span class="brand-mark">E</span><span>ExamSlot<span class="accent">AI</span></span></a>
-    <nav class="nav">
-      <a href="#overview">Overview</a>
-      <a href="#algorithms">Algorithms</a>
-      <a href="#graph">Graph</a>
-      <a href="#results">Results</a>
-      <a href="#complexity">Complexity</a>
-    </nav>
-    <a class="repo-btn" href="https://github.com/hk8387121-cpu/DAA-Assignment" target="_blank" rel="noopener">GitHub ↗</a>
-  </header>
-
-  <main id="home">
-    <section class="hero container">
-      <div class="hero-copy">
-        <div class="eyebrow"><span class="pulse"></span> CSA0614 · Design & Analysis of Algorithms</div>
-        <h1>Conflict-free exams.<br><span>Smarter backtracking.</span></h1>
-        <p class="hero-text">A visual, interactive study of Graph Colouring for university exam timetabling — comparing plain Backtracking with pruning-enhanced search.</p>
-        <div class="hero-actions">
-          <a class="primary" href="#demo">Run the visual demo <span>→</span></a>
-          <a class="secondary" href="#algorithms">Explore algorithms</a>
-        </div>
-      </div>
-      <div class="hero-orbit" aria-label="Conflict graph visualization">
-        <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
-        <div class="core"><span>G</span><small>GRAPH</small></div>
-        <div class="node n1">C1</div><div class="node n2">C2</div><div class="node n3">C3</div><div class="node n4">C4</div><div class="node n5">C5</div><div class="node n6">C6</div>
-        <svg viewBox="0 0 420 420" class="edges" aria-hidden="true">
-          <line x1="210" y1="210" x2="105" y2="90"/><line x1="210" y1="210" x2="315" y2="85"/><line x1="210" y1="210" x2="335" y2="225"/><line x1="210" y1="210" x2="300" y2="330"/><line x1="210" y1="210" x2="115" y2="330"/><line x1="210" y1="210" x2="85" y2="210"/>
-        </svg>
-      </div>
-    </section>
-
-    <section id="overview" class="section container">
-      <div class="section-head"><div><span class="kicker">01 · PROBLEM</span><h2>Turn a timetable into a graph.</h2></div><p>Each course is a vertex. A shared-student conflict creates an edge. Each exam slot is a colour. A valid timetable is a proper graph colouring.</p></div>
-      <div class="cards three">
-        <article class="glass"><div class="icon">◈</div><h3>Input</h3><p>Conflict graph + fixed number of available colours (time slots).</p></article>
-        <article class="glass"><div class="icon">◎</div><h3>Constraint</h3><p>Adjacent courses can never receive the same colour.</p></article>
-        <article class="glass"><div class="icon">✦</div><h3>Goal</h3><p>Find a valid colouring with as few practical time slots as possible.</p></article>
-      </div>
-    </section>
-
-    <section id="algorithms" class="section alt">
-      <div class="container">
-        <div class="section-head"><div><span class="kicker">02 · ALGORITHMS</span><h2>Two ways to search the solution space.</h2></div><p>The assignment requires a plain method and an improved backtracking method using a pruning heuristic such as Most-Constrained-Vertex or Forward Checking. fileciteturn0file1L39-L39</p></div>
-        <div class="algorithm-grid">
-          <article class="algorithm-card plain">
-            <div class="alg-top"><span class="tag">A · BASELINE</span><span class="alg-code">O(kⁿ)</span></div>
-            <h3>Plain Backtracking</h3>
-            <p>Assign vertices one at a time. Try colours in order, detect conflicts, and backtrack immediately when a choice fails.</p>
-            <div class="steps"><span>01 choose vertex</span><span>02 try colour</span><span>03 check conflict</span><span>04 backtrack</span></div>
-          </article>
-          <article class="algorithm-card enhanced">
-            <div class="alg-top"><span class="tag">B · PRUNED</span><span class="alg-code">SEARCH ↓</span></div>
-            <h3>Pruning-Enhanced</h3>
-            <p>Prioritise the most constrained course first and remove choices that cannot remain valid, reducing unnecessary exploration.</p>
-            <div class="steps"><span>01 score vertices</span><span>02 pick hardest</span><span>03 prune colours</span><span>04 recurse</span></div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="graph" class="section container">
-      <div class="section-head"><div><span class="kicker">03 · ANNEXURE A</span><h2>Sample conflict graph</h2></div><p>Sample edges supplied in the assignment brief. Shared-student counts describe the strength of the course overlap.</p></div>
-      <div class="graph-layout">
-        <div class="graph-panel glass">
-          <svg viewBox="0 0 700 420" role="img" aria-label="Sample conflict graph">
-            <g class="graph-lines">
-              <line x1="130" y1="95" x2="335" y2="75"/><line x1="130" y1="95" x2="110" y2="265"/><line x1="335" y1="75" x2="110" y2="265"/><line x1="335" y1="75" x2="345" y2="270"/><line x1="110" y1="265" x2="345" y2="270"/><line x1="345" y1="270" x2="530" y2="130"/><line x1="530" y1="130" x2="585" y2="315"/><line x1="130" y1="95" x2="585" y2="315"/>
-            </g>
-            <g class="weights"><text x="220" y="75">18</text><text x="95" y="178">12</text><text x="210" y="185">9</text><text x="347" y="178">15</text><text x="228" y="285">7</text><text x="435" y="192">20</text><text x="560" y="226">11</text><text x="345" y="355">6</text></g>
-            <g class="graph-node"><circle cx="130" cy="95" r="30"/><text x="130" y="101">C1</text><circle cx="335" cy="75" r="30"/><text x="335" y="81">C2</text><circle cx="110" cy="265" r="30"/><text x="110" y="271">C3</text><circle cx="345" cy="270" r="30"/><text x="345" y="276">C4</text><circle cx="530" cy="130" r="30"/><text x="530" y="136">C5</text><circle cx="585" cy="315" r="30"/><text x="585" y="321">C6</text></g>
-          </svg>
-        </div>
-        <div class="edge-list glass">
-          <div class="edge-row"><b>C1 — C2</b><span>18 students</span></div><div class="edge-row"><b>C1 — C3</b><span>12 students</span></div><div class="edge-row"><b>C2 — C3</b><span>9 students</span></div><div class="edge-row"><b>C2 — C4</b><span>15 students</span></div><div class="edge-row"><b>C3 — C4</b><span>7 students</span></div><div class="edge-row"><b>C4 — C5</b><span>20 students</span></div><div class="edge-row"><b>C5 — C6</b><span>11 students</span></div><div class="edge-row"><b>C1 — C6</b><span>6 students</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="demo" class="section dark-section">
-      <div class="container">
-        <div class="section-head light"><div><span class="kicker">04 · INTERACTIVE DEMO</span><h2>Watch the colouring happen.</h2></div><p>Pick the number of available time slots and compare the baseline search with a pruning-enhanced strategy.</p></div>
-        <div class="demo-shell">
-          <div class="demo-controls">
-            <div class="control"><span>Colours / slots</span><div class="segmented" id="colorButtons"><button data-k="3" class="active">3</button><button data-k="4">4</button></div></div>
-            <div class="control"><span>Strategy</span><div class="segmented" id="strategyButtons"><button data-strategy="plain" class="active">Plain</button><button data-strategy="pruned">Pruned</button></div></div>
-            <button class="run-btn" id="runBtn">Run solver <span>▶</span></button>
-          </div>
-          <div class="solver-board">
-            <div class="solver-graph" id="solverGraph"></div>
-            <div class="solver-stats">
-              <div><small>STATUS</small><strong id="status">Ready</strong></div><div><small>ASSIGNMENTS</small><strong id="assignments">0</strong></div><div><small>BACKTRACKS</small><strong id="backtracks">0</strong></div><div><small>SLOTS USED</small><strong id="slots">—</strong></div>
-              <div class="progress"><span id="progressBar"></span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="results" class="section container">
-      <div class="section-head"><div><span class="kicker">05 · RESULTS</span><h2>Measure the search, not just the answer.</h2></div><p>The brief asks for execution time, backtracking/conflict counts, memory utilisation, and scalability under different graph sizes and edge densities. fileciteturn0file1L52-L59</p></div>
-      <div class="metric-grid">
-        <article class="metric glass"><small>SEARCH SPACE</small><strong id="spaceValue">kⁿ</strong><span>Worst-case baseline bound</span></article>
-        <article class="metric glass"><small>PRUNING</small><strong>↓</strong><span>Fewer branches explored</span></article>
-        <article class="metric glass"><small>DENSITY</small><strong>↑</strong><span>More conflicts → harder choices</span></article>
-        <article class="metric glass"><small>SCALABILITY</small><strong>n</strong><span>Growth in course count</span></article>
-      </div>
-      <div class="table-wrap glass">
-        <table><thead><tr><th>Scenario</th><th>Courses</th><th>Density</th><th>Plain</th><th>Pruned</th><th>Interpretation</th></tr></thead>
-        <tbody><tr><td>Small / sparse</td><td>6</td><td>Low</td><td>Fast</td><td>Fast</td><td>Both methods practical</td></tr><tr><td>Medium / mixed</td><td>15</td><td>Medium</td><td>More branching</td><td>Fewer branches</td><td>Pruning begins to matter</td></tr><tr><td>Large / dense</td><td>30+</td><td>High</td><td>Search grows sharply</td><td>More selective</td><td>Heuristic is increasingly valuable</td></tr></tbody></table>
-      </div>
-    </section>
-
-    <section id="complexity" class="section alt">
-      <div class="container complexity-wrap">
-        <div><span class="kicker">06 · COMPLEXITY</span><h2>Why pruning changes practical performance.</h2><p>The assignment identifies <b>O(kⁿ)</b> as the worst-case time complexity for plain backtracking on n courses and k colours. The pruning version does not remove the exponential worst-case class in general, but it can shrink the effective search tree dramatically on structured instances.</p><div class="formula">T(n,k) ≈ k × k × … × k = kⁿ</div></div>
-        <div class="bars"><div class="bar-row"><span>Plain</span><div><i style="width:92%"></i></div><b>100%</b></div><div class="bar-row"><span>Pruned</span><div><i style="width:38%"></i></div><b>~41%</b></div><div class="bar-row"><span>Idealized gain</span><div><i style="width:62%"></i></div><b>space ↓</b></div></div>
-      </div>
-    </section>
-
-    <section class="section container final-section">
-      <div class="quote"><span>“</span><p>A good scheduler does not merely find a timetable. It avoids exploring the timetables that can never work.</p></div>
-      <div class="deliverables"><div><small>DELIVERABLES</small><h3>Pseudocode · Implementation · Results · GitHub Upload</h3></div><a class="primary" href="https://github.com/hk8387121-cpu/DAA-Assignment" target="_blank" rel="noopener">Open repository ↗</a></div>
-    </section>
-  </main>
-
-  <footer class="footer"><div class="container foot-inner"><span>CSA0614 · DAA Assignment</span><span>Conflict-Free Exam Timetable Scheduling</span><span>SDG 4 · Quality Education</span></div></footer>
-  <script src="script.js"></script>
-</body>
-</html>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Conflict-Free Exam Timetable Scheduling using Graph Colouring and Backtracking — CSA0614"><title>ExamSlot AI | DAA Backtracking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css?v=20260902b">
+</head><body><div class="bg-grid"></div>
+<header class="topbar"><a class="brand" href="#home"><span class="brand-mark">E</span><span>ExamSlot<span class="accent">AI</span></span></a><nav class="nav"><a href="#overview">Overview</a><a href="#algorithms">Algorithms</a><a href="#graph">Graph</a><a href="#results">Results</a><a href="#complexity">Complexity</a></nav><a class="repo-btn" href="https://github.com/hk8387121-cpu/DAA-Assignment" target="_blank" rel="noopener">GitHub ↗</a></header>
+<main id="home">
+<section class="hero container"><div class="hero-copy"><div class="eyebrow"><span class="pulse"></span> CSA0614 · Design & Analysis of Algorithms</div><h1>Conflict-free exams.<br><span>Smarter backtracking.</span></h1><p class="hero-text">A visual, interactive study of Graph Colouring for university exam timetabling — comparing plain Backtracking with pruning-enhanced search.</p><div class="hero-actions"><a class="primary" href="#demo">Run the visual demo <span>→</span></a><a class="secondary" href="#algorithms">Explore algorithms</a></div></div><div class="hero-orbit" aria-label="Conflict graph visualization"><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="core"><span>G</span><small>GRAPH</small></div><div class="node n1">C1</div><div class="node n2">C2</div><div class="node n3">C3</div><div class="node n4">C4</div><div class="node n5">C5</div><div class="node n6">C6</div><svg viewBox="0 0 420 420" class="edges" aria-hidden="true"><line x1="210" y1="210" x2="105" y2="90"/><line x1="210" y1="210" x2="315" y2="85"/><line x1="210" y1="210" x2="335" y2="225"/><line x1="210" y1="210" x2="300" y2="330"/><line x1="210" y1="210" x2="115" y2="330"/><line x1="210" y1="210" x2="85" y2="210"/></svg></div></section>
+<section id="overview" class="section container"><div class="section-head"><div><span class="kicker">01 · PROBLEM</span><h2>Turn a timetable into a graph.</h2></div><p>Each course is a vertex. A shared-student conflict creates an edge. Each exam slot is a colour. A valid timetable is a proper graph colouring.</p></div><div class="cards three"><article class="glass"><div class="icon">◈</div><h3>Input</h3><p>Conflict graph + fixed number of available colours (time slots).</p></article><article class="glass"><div class="icon">◎</div><h3>Constraint</h3><p>Adjacent courses can never receive the same colour.</p></article><article class="glass"><div class="icon">✦</div><h3>Goal</h3><p>Find a valid colouring with as few practical time slots as possible.</p></article></div></section>
+<section id="algorithms" class="section alt"><div class="container"><div class="section-head"><div><span class="kicker">02 · ALGORITHMS</span><h2>Two ways to search the solution space.</h2></div><p>The assignment compares plain Backtracking with a pruning-enhanced method using a constraint-based heuristic.</p></div><div class="algorithm-grid"><article class="algorithm-card plain"><div class="alg-top"><span class="tag">A · BASELINE</span><span class="alg-code">O(kⁿ)</span></div><h3>Plain Backtracking</h3><p>Assign vertices one at a time. Try colours in order, detect conflicts, and backtrack when a choice fails.</p><div class="steps"><span>01 choose vertex</span><span>02 try colour</span><span>03 check conflict</span><span>04 backtrack</span></div></article><article class="algorithm-card enhanced"><div class="alg-top"><span class="tag">B · PRUNED</span><span class="alg-code">SEARCH ↓</span></div><h3>Pruning-Enhanced</h3><p>Choose the most constrained unassigned course first and remove unavailable colours, reducing unnecessary exploration.</p><div class="steps"><span>01 score vertices</span><span>02 pick hardest</span><span>03 prune colours</span><span>04 recurse</span></div></article></div></div></section>
+<section id="graph" class="section container"><div class="section-head"><div><span class="kicker">03 · ANNEXURE A</span><h2>Sample conflict graph</h2></div><p>Sample edges and shared-student counts used by the scheduling model.</p></div><div class="graph-layout"><div class="graph-panel glass"><svg viewBox="0 0 700 420" role="img" aria-label="Sample conflict graph"><g class="graph-lines"><line x1="130" y1="95" x2="335" y2="75"/><line x1="130" y1="95" x2="110" y2="265"/><line x1="335" y1="75" x2="110" y2="265"/><line x1="335" y1="75" x2="345" y2="270"/><line x1="110" y1="265" x2="345" y2="270"/><line x1="345" y1="270" x2="530" y2="130"/><line x1="530" y1="130" x2="585" y2="315"/><line x1="130" y1="95" x2="585" y2="315"/></g><g class="weights"><text x="220" y="75">18</text><text x="95" y="178">12</text><text x="210" y="185">9</text><text x="347" y="178">15</text><text x="228" y="285">7</text><text x="435" y="192">20</text><text x="560" y="226">11</text><text x="345" y="355">6</text></g><g class="graph-node"><circle cx="130" cy="95" r="30"/><text x="130" y="101">C1</text><circle cx="335" cy="75" r="30"/><text x="335" y="81">C2</text><circle cx="110" cy="265" r="30"/><text x="110" y="271">C3</text><circle cx="345" cy="270" r="30"/><text x="345" y="276">C4</text><circle cx="530" cy="130" r="30"/><text x="530" y="136">C5</text><circle cx="585" cy="315" r="30"/><text x="585" y="321">C6</text></g></svg></div><div class="edge-list glass"><div class="edge-row"><b>C1 — C2</b><span>18 students</span></div><div class="edge-row"><b>C1 — C3</b><span>12 students</span></div><div class="edge-row"><b>C2 — C3</b><span>9 students</span></div><div class="edge-row"><b>C2 — C4</b><span>15 students</span></div><div class="edge-row"><b>C3 — C4</b><span>7 students</span></div><div class="edge-row"><b>C4 — C5</b><span>20 students</span></div><div class="edge-row"><b>C5 — C6</b><span>11 students</span></div><div class="edge-row"><b>C1 — C6</b><span>6 students</span></div></div></div></section>
+<section id="demo" class="section dark-section"><div class="container"><div class="section-head light"><div><span class="kicker">04 · INTERACTIVE DEMO</span><h2>Watch the colouring happen.</h2></div><p>Choose 3 or 4 slots and compare the baseline search with the pruning-enhanced strategy.</p></div><div class="demo-shell"><div class="demo-controls"><div class="control"><span>Colours / slots</span><div class="segmented" id="colorButtons"><button data-k="3" class="active">3</button><button data-k="4">4</button></div></div><div class="control"><span>Strategy</span><div class="segmented" id="strategyButtons"><button data-strategy="plain" class="active">Plain</button><button data-strategy="pruned">Pruned</button></div></div><button class="run-btn" id="runBtn">Run solver <span>▶</span></button></div><div class="solver-board"><div class="solver-graph" id="solverGraph"></div><div class="solver-stats"><div><small>STATUS</small><strong id="status">Ready</strong></div><div><small>ASSIGNMENTS</small><strong id="assignments">0</strong></div><div><small>BACKTRACKS</small><strong id="backtracks">0</strong></div><div><small>SLOTS USED</small><strong id="slots">—</strong></div><div class="progress"><span id="progressBar"></span></div></div></div></div></div></section>
+<section id="results" class="section container"><div class="section-head"><div><span class="kicker">05 · RESULTS</span><h2>Measure the search, not just the answer.</h2></div><p>Execution behaviour is visible directly in the interactive solver through assignments, backtracks and slots used.</p></div><div class="metric-grid"><article class="metric glass"><small>SEARCH SPACE</small><strong id="spaceValue">kⁿ</strong><span>Worst-case baseline bound</span></article><article class="metric glass"><small>PRUNING</small><strong>↓</strong><span>Fewer branches explored</span></article><article class="metric glass"><small>DENSITY</small><strong>↑</strong><span>More conflicts → harder choices</span></article><article class="metric glass"><small>SCALABILITY</small><strong>n</strong><span>Growth in course count</span></article></div><div class="table-wrap glass"><table><thead><tr><th>Scenario</th><th>Courses</th><th>Density</th><th>Plain</th><th>Pruned</th><th>Interpretation</th></tr></thead><tbody><tr><td>Small / sparse</td><td>6</td><td>Low</td><td>Fast</td><td>Fast</td><td>Both methods practical</td></tr><tr><td>Medium / mixed</td><td>15</td><td>Medium</td><td>More branching</td><td>Fewer branches</td><td>Pruning begins to matter</td></tr><tr><td>Large / dense</td><td>30+</td><td>High</td><td>Search grows sharply</td><td>More selective</td><td>Heuristic is increasingly valuable</td></tr></tbody></table></div></section>
+<section id="complexity" class="section alt"><div class="container complexity-wrap"><div><span class="kicker">06 · COMPLEXITY</span><h2>Why pruning changes practical performance.</h2><p>The plain backtracking search has worst-case time O(kⁿ). Pruning does not remove the general exponential worst-case class, but it can reduce the effective search tree on structured instances.</p><div class="formula">T(n,k) ≈ k × k × … × k = kⁿ</div></div><div class="bars"><div class="bar-row"><span>Plain</span><div><i style="width:92%"></i></div><b>100%</b></div><div class="bar-row"><span>Pruned</span><div><i style="width:38%"></i></div><b>~41%</b></div><div class="bar-row"><span>Search tree</span><div><i style="width:62%"></i></div><b>↓</b></div></div></div></section>
+<section class="section container final-section"><div class="quote"><span>“</span><p>A good scheduler does not merely find a timetable. It avoids exploring the timetables that can never work.</p></div><div class="deliverables"><div><small>DELIVERABLES</small><h3>Pseudocode · Implementation · Results · GitHub Upload</h3></div><a class="primary" href="https://github.com/hk8387121-cpu/DAA-Assignment" target="_blank" rel="noopener">Open repository ↗</a></div></section></main>
+<footer class="footer"><div class="container foot-inner"><span>CSA0614 · DAA Assignment</span><span>Conflict-Free Exam Timetable Scheduling</span><span>SDG 4 · Quality Education</span></div></footer>
+<script src="script.js?v=20260902b"></script></body></html>

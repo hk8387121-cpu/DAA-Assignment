@@ -4,6 +4,7 @@ let k=3,strategy='plain';
 const graph=document.getElementById('solverGraph');
 const statusEl=document.getElementById('status'),assignEl=document.getElementById('assignments'),backEl=document.getElementById('backtracks'),slotEl=document.getElementById('slots'),bar=document.getElementById('progressBar');
 const pos={C1:[18,18],C2:[54,10],C3:[14,55],C4:[55,52],C5:[79,27],C6:[82,75]};
+const nodeSize=52;
 function makeGraph(){
   graph.innerHTML='';
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
@@ -20,7 +21,8 @@ function makeGraph(){
   for(const n of nodes){
     const d=document.createElement('div');
     d.className='sg-node'; d.id='sg-'+n; d.textContent=n;
-    d.style.left=pos[n][0]+'%'; d.style.top=pos[n][1]+'%';
+    d.style.left=`calc(${pos[n][0]}% + ${nodeSize/2}px)`;
+    d.style.top=`calc(${pos[n][1]}% + ${nodeSize/2}px)`;
     graph.appendChild(d);
   }
 }
